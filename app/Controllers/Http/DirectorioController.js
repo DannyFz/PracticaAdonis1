@@ -1,14 +1,31 @@
 'use strict'
 
 const Directorio = use('App/Models/Directorio')
+const {validateAll} = use('Validator')
 
 class DirectorioController {
-  
-  async index ({ request, response}) {
+  //GET
+  async index ({ request}) {
     return await Directorio.all();
   }
-
+  //POST
   async store ({ request, response}) {
+    const input = request.all()
+
+  const validation = await validateAll(input, {
+    
+    'telefono' : 'required|unique:directorios,telefono'
+  })
+  if(validation.fails()){
+    return validation.messages();
+  }
+
+    await Directorio.create(input)
+
+    return response.json({
+      rer:true,
+      message: "Se a insertado correctamente"
+    })
   }
 
   async show ({ params, request, response}) {
